@@ -13,6 +13,7 @@ const elements = {
 const normalize = (value) => String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
 const formatDate = (date) => date ? new Intl.DateTimeFormat("es-AR", { timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`)) : "Fecha sin validar";
 const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
+const byDocumentNumber = (a, b) => String(a.numero).localeCompare(String(b.numero), "es", { numeric: true }) || collator.compare(a.tipo, b.tipo);
 
 function applyFilters() {
   const keyword = normalize(elements.keyword.value.trim());
@@ -27,7 +28,7 @@ function applyFilters() {
     if (to && (!document.fecha || document.fecha > to)) return false;
     if (keyword && !normalize(`${document.descripcion} ${document.expediente || ""} ${document.tipo} ${document.numero}`).includes(keyword)) return false;
     return true;
-  });
+  }).sort(byDocumentNumber);
   state.page = 1;
   render();
 }
@@ -78,7 +79,7 @@ try {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const payload = await response.json();
   state.documents = payload.documentos;
-  state.filtered = payload.documentos;
+  state.filtered = [...payload.documentos].sort(byDocumentNumber);
   [...new Set(payload.documentos.map((document) => document.tipo))].sort((a, b) => collator.compare(a, b)).forEach((type) => elements.type.add(new Option(type, type)));
   elements.loading.hidden = true;
   render();
