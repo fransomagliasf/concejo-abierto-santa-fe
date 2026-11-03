@@ -59,7 +59,7 @@ function extractExpediente(block) {
 
   // En registros modernos el identificador suele aparecer solo, sin la palabra "Expte".
   // También se conservan expedientes históricos como 1178-D-84 cuando están sin rótulo.
-  const codes = [...block.matchAll(/\b(?:[A-Z]{2}-\d{3,5}-\d{8}-\d|\d{2,8}-[A-Z]{1,4}-\d{2,4})\b/gi)]
+  const codes = [...block.matchAll(/(?:[A-Z]{2}-\d{3,5}-\d{8}-\d\b(?:[ \t]*\([A-Z]{1,5}\))?|\b\d{2,8}-[A-Z]{1,4}-\d{2,4}\b)/gi)]
     .map((match) => match[0]);
   return codes.length ? [...new Set(codes)].join("; ") : null;
 }
