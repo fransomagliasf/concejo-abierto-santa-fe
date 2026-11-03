@@ -6,7 +6,7 @@ const $ = (selector) => document.querySelector(selector);
 const elements = {
   form: $("#filters"), keyword: $("#keyword"), type: $("#type"), number: $("#number"),
   from: $("#from"), to: $("#to"), clear: $("#clear"), body: $("#table-body"),
-  count: $("#result-count"), summary: $("#active-summary"), loading: $("#loading"),
+  count: $("#result-count"), loading: $("#loading"),
   error: $("#error"), empty: $("#empty"), table: $("#table-wrap"), pagination: $("#pagination"),
   previous: $("#previous"), next: $("#next"), pageLabel: $("#page-label"), notice: $("#notice"),
   documentsTab: $("#documents-tab"), sessionsTab: $("#sessions-tab"), documentsControls: $("#documents-controls"),
@@ -45,8 +45,6 @@ function render() {
   const start = (state.page - 1) * PAGE_SIZE;
   const page = state.filtered.slice(start, start + PAGE_SIZE);
   elements.count.textContent = `${state.filtered.length.toLocaleString("es-AR")} documentos`;
-  const active = [elements.type.value, elements.number.value && `N° ${elements.number.value}`, elements.keyword.value && `“${elements.keyword.value}”`].filter(Boolean);
-  elements.summary.textContent = active.length ? active.join(" · ") : "Todos los documentos";
   elements.empty.hidden = state.filtered.length !== 0;
   elements.table.hidden = state.filtered.length === 0;
   elements.pagination.hidden = state.filtered.length <= PAGE_SIZE;
