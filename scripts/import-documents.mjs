@@ -117,6 +117,49 @@ function makeRecord(type, number, date, description, block, line) {
   };
 }
 
+function applyManualCorrections(type, records) {
+  const corrections = [
+    { type: "Declaración", number: "7326", date: "16/04/30", set: { fecha: "2026-04-16" }, note: "Fecha corregida a 16/04/26" },
+    { type: "Mensaje", number: "034/24", date: "16/10/25", set: { numero: "034/25" }, note: "Número corregido a 034/25" },
+    { type: "Mensaje", number: "064/05", date: "30/12/04", set: { numero: "064/04" }, note: "Número corregido a 064/04" },
+    { type: "Mensaje", number: "006/25", date: null, set: { fecha: "2025-03-05" }, note: "Fecha incorporada: 05/03/25" },
+    { type: "Mensaje", number: "007/25", date: "24/04/25", set: { fecha: "2025-03-05" }, note: "Fecha corregida a 05/03/25" },
+    { type: "Decreto", number: "112", date: "30/12/91", set: { numeroDetalle: "112 BIS" }, note: "Identificado como Decreto 112 BIS" },
+    { type: "Ordenanza", number: "9211", date: "04/01/91", set: { numero: "9311" }, note: "Número corregido a 9311" },
+    { type: "Ordenanza", number: "8956", date: "30/96/87", set: { fecha: "1987-06-30" }, note: "Fecha corregida a 30/06/87" },
+    { type: "Ordenanza", number: "10607", date: "31/09/00", set: { fecha: "2000-08-31" }, note: "Fecha corregida a 31/08/00" },
+    { type: "Ordenanza", number: "10608", date: "31/09/00", set: { fecha: "2000-08-31" }, note: "Fecha corregida a 31/08/00" },
+    { type: "Ordenanza", number: "10685", date: "29/93/01", set: { fecha: "2001-03-29" }, note: "Fecha corregida a 29/03/01" },
+    { type: "Resolución", number: "962", date: "17/93/88", set: { fecha: "1988-03-17" }, note: "Fecha corregida a 17/03/88" },
+    { type: "Resolución", number: "1463", date: "06/19/89", set: { fecha: "1989-10-06" }, note: "Fecha corregida a 06/10/89" },
+    { type: "Resolución", number: "15546", date: "10/0/15", set: { fecha: "2015-09-10" }, note: "Fecha corregida a 10/09/15" },
+    { type: "Resolución", number: "25775", date: "01/14/26", set: { fecha: "2026-04-01" }, note: "Fecha corregida a 01/04/26" },
+    { type: "Resolución", number: "902", date: "16/09/87", set: { descripcion: "Sin descripción" }, note: "Descripción ausente explicitada" },
+    { type: "Resolución", number: "17756", date: "07/12/06", set: { numero: "11756" }, note: "Número corregido a 11756" },
+    { type: "Resolución", number: "11469", date: "22/11/12", set: { numero: "14469" }, note: "Número corregido a 14469" },
+    { type: "Resolución", number: "11470", date: "22/11/12", set: { numero: "14470" }, note: "Número corregido a 14470" },
+    { type: "Resolución", number: "10438", date: "30/08/18", set: { numero: "19438" }, note: "Número corregido a 19438" },
+    { type: "Resolución", number: "8857", date: "29/03/01", set: { numero: "8557" }, note: "Número corregido a 8557" },
+    { type: "Resolución", number: "8858", date: "29/03/01", set: { numero: "8558" }, note: "Número corregido a 8558" },
+    { type: "Resolución", number: "8515", date: "07/09/00", set: { numero: "8415" }, note: "Número corregido a 8415" },
+    { type: "Resolución", number: "5728", date: "15/06/95", description: "Archivo expediente N° 12213-R-94", set: { numero: "5726" }, note: "Número corregido a 5726" },
+  ];
+
+  for (const correction of corrections.filter((item) => item.type === type)) {
+    const record = records.find((item) => item.numero === correction.number
+      && item.fechaOriginal === correction.date
+      && (!correction.description || item.descripcion.includes(correction.description)));
+    if (!record) continue;
+    Object.assign(record, correction.set);
+    if (correction.set.numero) record.id = `${type.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}-${record.numero}`;
+    if (record.numeroDetalle === "112 BIS") {
+      record.id = "decreto-112-bis";
+      record.descripcion = `${record.descripcion} [N.º de decreto: 112 BIS]`;
+    }
+    record.correccion = correction.note;
+  }
+}
+
 function csvCell(value) {
   const text = String(value ?? "");
   return `"${text.replaceAll('"', '""')}"`;
@@ -135,13 +178,7 @@ for (const [type, filename] of sources) {
   const path = join(inputDir, filename);
   const content = await readFile(path, "utf8");
   const parsed = type === "Mensaje" ? parseMessages(content) : parseStandard(content, type);
-  if (type === "Declaración") {
-    const corrected = parsed.find((document) => document.numero === "7326");
-    if (corrected) {
-      corrected.fecha = "2026-04-16";
-      corrected.correccion = "Fecha corregida de 16/04/30 a 16/04/26";
-    }
-  }
+  applyManualCorrections(type, parsed);
   documents.push(...parsed);
   sourceInfo.push({
     tipo: type,
@@ -154,13 +191,16 @@ for (const [type, filename] of sources) {
 documents.sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "") || a.tipo.localeCompare(b.tipo) || a.numero.localeCompare(b.numero, "es", { numeric: true }));
 const anomalies = [];
 const seen = new Map();
+const confirmedResolutionDuplicates = new Set(["2069", "2089", "2739"]);
 for (const document of documents) {
   if (!document.fecha) anomalies.push([document.tipo, document.numero, "fecha_invalida_o_ausente", document.fechaOriginal, document.lineaOrigen]);
   else if (document.fecha > IMPORT_DATE) anomalies.push([document.tipo, document.numero, "fecha_futura", document.fechaOriginal, document.lineaOrigen]);
   if (!document.descripcion) anomalies.push([document.tipo, document.numero, "descripcion_ausente", "", document.lineaOrigen]);
   if (!document.expediente) anomalies.push([document.tipo, document.numero, "expediente_ausente", "", document.lineaOrigen]);
   const key = `${document.tipo}|${document.numero}`;
-  const duplicateConfirmed = document.tipo === "Resolución" && Number(document.numero) >= 25851 && Number(document.numero) <= 25875;
+  const duplicateConfirmed = (document.tipo === "Resolución" && Number(document.numero) >= 25851 && Number(document.numero) <= 25875)
+    || (document.tipo === "Resolución" && confirmedResolutionDuplicates.has(document.numero))
+    || (document.tipo === "Decreto" && document.numero === "112");
   if (seen.has(key) && !duplicateConfirmed) anomalies.push([document.tipo, document.numero, "numero_duplicado", `También en línea ${seen.get(key)}`, document.lineaOrigen]);
   else seen.set(key, document.lineaOrigen);
 }
