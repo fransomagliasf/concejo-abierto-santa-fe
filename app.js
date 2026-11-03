@@ -1,4 +1,4 @@
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 10;
 const MISSING_EXPEDIENTE = "Expediente ausente";
 const state = { documents: [], filtered: [], sessions: [], page: 1, expandedSession: null };
 const collator = new Intl.Collator("es", { sensitivity: "base", usage: "search" });
@@ -19,7 +19,6 @@ const formatDate = (date) => date ? new Intl.DateTimeFormat("es-AR", { timeZone:
 const formatLongDate = (date) => new Intl.DateTimeFormat("es-AR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));
 const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
 const byDocumentNumber = (a, b) => String(a.numero).localeCompare(String(b.numero), "es", { numeric: true }) || collator.compare(a.tipo, b.tipo);
-const byDateDescending = (a, b) => (b.fecha || "").localeCompare(a.fecha || "") || byDocumentNumber(a, b);
 
 function applyFilters() {
   const keyword = normalize(elements.keyword.value.trim());
@@ -34,7 +33,7 @@ function applyFilters() {
     if (to && (!document.fecha || document.fecha > to)) return false;
     if (keyword && !normalize(`${document.descripcion} ${document.expediente || ""} ${document.tipo} ${document.numero}`).includes(keyword)) return false;
     return true;
-  }).sort(byDateDescending);
+  }).sort(byDocumentNumber);
   state.page = 1;
   render();
 }
@@ -147,7 +146,7 @@ try {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const payload = await response.json();
   state.documents = payload.documentos;
-  state.filtered = [...payload.documentos].sort(byDateDescending);
+  state.filtered = [...payload.documentos].sort(byDocumentNumber);
   buildSessions();
   if (elements.sessionsTab.getAttribute("aria-selected") === "true") renderSessions();
   [...new Set(payload.documentos.map((document) => document.tipo))].sort((a, b) => collator.compare(a, b)).forEach((type) => elements.type.add(new Option(type, type)));
