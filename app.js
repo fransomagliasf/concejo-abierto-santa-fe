@@ -1,4 +1,5 @@
 const PAGE_SIZE = 50;
+const MISSING_EXPEDIENTE = "Expediente ausente";
 const state = { documents: [], filtered: [], page: 1 };
 const collator = new Intl.Collator("es", { sensitivity: "base", usage: "search" });
 const $ = (selector) => document.querySelector(selector);
@@ -52,7 +53,7 @@ function render() {
       </td>
       <td>
         <div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div>
-        ${document.expediente ? "" : '<span class="missing-data">N° de expediente ausente</span>'}
+        ${document.expediente === MISSING_EXPEDIENTE ? `<span class="missing-data">${MISSING_EXPEDIENTE}</span>` : ""}
       </td>
       <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a></td>
     </tr>`).join("");

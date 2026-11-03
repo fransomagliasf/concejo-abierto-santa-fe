@@ -5,6 +5,7 @@ import { basename, join, resolve } from "node:path";
 const inputDir = resolve(process.argv[2] || "importaciones/texto");
 const outputDir = resolve("data");
 const IMPORT_DATE = "2026-11-03";
+const MISSING_EXPEDIENTE = "Expediente ausente";
 const sources = [
   ["Ordenanza", "ORDENANZAS.txt"],
   ["Decreto", "DECRETOS.txt"],
@@ -112,7 +113,7 @@ function makeRecord(type, number, date, description, block, line) {
     fecha: date.iso,
     fechaOriginal: date.raw,
     descripcion: description,
-    expediente: extractExpediente(block),
+    expediente: extractExpediente(block) || MISSING_EXPEDIENTE,
     lineaOrigen: line,
   };
 }
@@ -124,7 +125,9 @@ function applyManualCorrections(type, records) {
     { type: "Mensaje", number: "064/05", date: "30/12/04", set: { numero: "064/04" }, note: "Número corregido a 064/04" },
     { type: "Mensaje", number: "006/25", date: null, set: { fecha: "2025-03-05" }, note: "Fecha incorporada: 05/03/25" },
     { type: "Mensaje", number: "007/25", date: "24/04/25", set: { fecha: "2025-03-05" }, note: "Fecha corregida a 05/03/25" },
+    { type: "Mensaje", number: "016/09", date: "04/07/19", set: { numero: "016/19" }, note: "Número corregido a 016/19" },
     { type: "Decreto", number: "112", date: "30/12/91", set: { numeroDetalle: "112 BIS" }, note: "Identificado como Decreto 112 BIS" },
+    { type: "Declaración", number: "67", date: "10/05/90", set: { numeroDetalle: "67 BIS", descripcion: "Apoyo a la Comisión investigadora de la Honorable Cámara de Senadores. 6859-D-90 [Declaración 67 BIS]" }, note: "Identificada como Declaración 67 BIS" },
     { type: "Ordenanza", number: "9211", date: "04/01/91", set: { numero: "9311" }, note: "Número corregido a 9311" },
     { type: "Ordenanza", number: "8956", date: "30/96/87", set: { fecha: "1987-06-30" }, note: "Fecha corregida a 30/06/87" },
     { type: "Ordenanza", number: "10607", date: "31/09/00", set: { fecha: "2000-08-31" }, note: "Fecha corregida a 31/08/00" },
@@ -143,6 +146,8 @@ function applyManualCorrections(type, records) {
     { type: "Resolución", number: "8858", date: "29/03/01", set: { numero: "8558" }, note: "Número corregido a 8558" },
     { type: "Resolución", number: "8515", date: "07/09/00", set: { numero: "8415" }, note: "Número corregido a 8415" },
     { type: "Resolución", number: "5728", date: "15/06/95", description: "Archivo expediente N° 12213-R-94", set: { numero: "5726" }, note: "Número corregido a 5726" },
+    { type: "Comunicación", number: "6093", date: "26/14/18", set: { fecha: "2018-04-26" }, note: "Fecha corregida a 26/04/18" },
+    { type: "Comunicación", number: "3999", date: "22/03/01", set: { numero: "3399" }, note: "Número corregido a 3399" },
   ];
 
   for (const correction of corrections.filter((item) => item.type === type)) {
@@ -156,6 +161,7 @@ function applyManualCorrections(type, records) {
       record.id = "decreto-112-bis";
       record.descripcion = `${record.descripcion} [N.º de decreto: 112 BIS]`;
     }
+    if (record.numeroDetalle === "67 BIS") record.id = "declaracion-67-bis";
     record.correccion = correction.note;
   }
 }
@@ -196,11 +202,11 @@ for (const document of documents) {
   if (!document.fecha) anomalies.push([document.tipo, document.numero, "fecha_invalida_o_ausente", document.fechaOriginal, document.lineaOrigen]);
   else if (document.fecha > IMPORT_DATE) anomalies.push([document.tipo, document.numero, "fecha_futura", document.fechaOriginal, document.lineaOrigen]);
   if (!document.descripcion) anomalies.push([document.tipo, document.numero, "descripcion_ausente", "", document.lineaOrigen]);
-  if (!document.expediente) anomalies.push([document.tipo, document.numero, "expediente_ausente", "", document.lineaOrigen]);
   const key = `${document.tipo}|${document.numero}`;
   const duplicateConfirmed = (document.tipo === "Resolución" && Number(document.numero) >= 25851 && Number(document.numero) <= 25875)
     || (document.tipo === "Resolución" && confirmedResolutionDuplicates.has(document.numero))
-    || (document.tipo === "Decreto" && document.numero === "112");
+    || (document.tipo === "Decreto" && document.numero === "112")
+    || (document.tipo === "Declaración" && document.numero === "67");
   if (seen.has(key) && !duplicateConfirmed) anomalies.push([document.tipo, document.numero, "numero_duplicado", `También en línea ${seen.get(key)}`, document.lineaOrigen]);
   else seen.set(key, document.lineaOrigen);
 }
