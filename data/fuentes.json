@@ -1,0 +1,41 @@
+{
+  "generado": "2026-11-03",
+  "fuentes": [
+    {
+      "tipo": "Ordenanza",
+      "archivo": "ORDENANZAS.txt",
+      "sha256Texto": "25dc5180f164c97d3fa7f9f5f36d21b5e12ba3117603030e93a747aaf19828f2",
+      "registros": 4560
+    },
+    {
+      "tipo": "Decreto",
+      "archivo": "DECRETOS.txt",
+      "sha256Texto": "7dd422945b1e228ea7bfb537c2c96380ae06f633b92447555f138554ae49f14c",
+      "registros": 1222
+    },
+    {
+      "tipo": "Resolución",
+      "archivo": "RESOLUCIONES.txt",
+      "sha256Texto": "4482dedba2024460940584eb56cc553fe064e41be12db950bedfa7f6771b7eeb",
+      "registros": 25645
+    },
+    {
+      "tipo": "Declaración",
+      "archivo": "DECLARACIONES.txt",
+      "sha256Texto": "91eb1c07fdfc051c9d8e9e63a724a4cd5577054c9cb4391cfe93f2b2328f3337",
+      "registros": 7695
+    },
+    {
+      "tipo": "Comunicación",
+      "archivo": "COMUNICACIONES.txt",
+      "sha256Texto": "e093e7c45b042d32940ab131e4bd34546fe83895c37cd3787dd27fb71fb49c83",
+      "registros": 6463
+    },
+    {
+      "tipo": "Mensaje",
+      "archivo": "Mensajes Años 98-2026.txt",
+      "sha256Texto": "e249c525ae2fc42a0945c3479de61a15c46263169b984aca7de03ee71948d518",
+      "registros": 1731
+    }
+  ]
+}

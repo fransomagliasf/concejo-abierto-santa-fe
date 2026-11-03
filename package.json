@@ -1,0 +1,11 @@
+{
+  "name": "concejo-abierto-santa-fe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node scripts/import-documents.mjs",
+    "check": "node scripts/check-data.mjs",
+    "start": "node scripts/serve.mjs"
+  }
+}

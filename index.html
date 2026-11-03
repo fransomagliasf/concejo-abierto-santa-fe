@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Buscador abierto de normativa y actividad legislativa del Concejo Municipal de Santa Fe." />
+    <title>Concejo Abierto Santa Fe</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="Concejo Abierto Santa Fe, inicio">
+        <span class="brand-mark" aria-hidden="true">CA</span>
+        <span>Concejo Abierto <strong>Santa Fe</strong></span>
+      </a>
+      <a class="data-link" href="data/inconsistencias.csv" download>Descargar inconsistencias</a>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <p class="eyebrow">Transparencia legislativa</p>
+        <h1>Encontrá la norma que estás buscando</h1>
+        <p class="hero-copy">Consultá ordenanzas, decretos, resoluciones, declaraciones, comunicaciones y mensajes del Concejo Municipal.</p>
+      </section>
+
+      <section class="search-panel" aria-labelledby="search-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Archivo legislativo</p>
+            <h2 id="search-title">Buscar documentos</h2>
+          </div>
+          <button id="clear" class="text-button" type="button">Limpiar filtros</button>
+        </div>
+
+        <form id="filters" class="filters" role="search">
+          <label class="field field-wide">
+            <span>Palabra clave</span>
+            <span class="input-wrap search-input">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" /></svg>
+              <input id="keyword" type="search" placeholder="Ej.: transporte, presupuesto, espacio público" autocomplete="off" />
+            </span>
+          </label>
+
+          <label class="field">
+            <span>Tipo de documento</span>
+            <select id="type">
+              <option value="">Todos los tipos</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Número exacto</span>
+            <input id="number" type="text" inputmode="numeric" placeholder="Ej.: 13157" />
+          </label>
+
+          <fieldset class="date-range">
+            <legend>Fecha</legend>
+            <label><span>Desde</span><input id="from" type="date" /></label>
+            <label><span>Hasta</span><input id="to" type="date" /></label>
+          </fieldset>
+        </form>
+      </section>
+
+      <section class="results" aria-labelledby="results-title">
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow">Resultados</p>
+            <h2 id="results-title"><span id="result-count">Cargando</span></h2>
+          </div>
+          <p id="active-summary" class="active-summary" aria-live="polite"></p>
+        </div>
+
+        <div id="loading" class="status-card">Preparando el archivo legislativo…</div>
+        <div id="error" class="status-card error" hidden>No pudimos cargar los datos. Volvé a intentar en unos minutos.</div>
+        <div id="empty" class="status-card" hidden>
+          <strong>No encontramos coincidencias.</strong>
+          <span>Probá con menos filtros o con otra palabra.</span>
+        </div>
+
+        <div id="table-wrap" class="table-wrap" hidden>
+          <table>
+            <thead><tr><th>N°</th><th>Descripción</th><th>Ver documento</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+
+        <nav id="pagination" class="pagination" aria-label="Paginación de resultados" hidden>
+          <button id="previous" type="button">← Anterior</button>
+          <span id="page-label"></span>
+          <button id="next" type="button">Siguiente →</button>
+        </nav>
+      </section>
+    </main>
+
+    <footer>
+      <p>Datos compilados a partir de los archivos generales del Concejo Municipal de Santa Fe.</p>
+      <p>Última actualización: <time datetime="2026-11-03">3 de noviembre de 2026</time></p>
+    </footer>
+
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden>El documento individual estará disponible próximamente.</div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
