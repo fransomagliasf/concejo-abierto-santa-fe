@@ -18,7 +18,7 @@ const normalize = (value) => String(value || "").normalize("NFD").replace(/[\u03
 const formatDate = (date) => date ? new Intl.DateTimeFormat("es-AR", { timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`)) : "Fecha sin validar";
 const formatLongDate = (date) => new Intl.DateTimeFormat("es-AR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));
 const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
-const byDocumentNumber = (a, b) => String(a.numero).localeCompare(String(b.numero), "es", { numeric: true }) || collator.compare(a.tipo, b.tipo);
+const byDocumentNumber = (a, b) => String(b.numero).localeCompare(String(a.numero), "es", { numeric: true }) || collator.compare(a.tipo, b.tipo);
 
 function applyFilters() {
   const keyword = normalize(elements.keyword.value.trim());
