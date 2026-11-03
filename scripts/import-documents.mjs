@@ -65,6 +65,13 @@ function extractExpediente(block) {
 }
 
 function parseStandard(text, type) {
+  if (type === "Resolución") {
+    text = text.replace(/^(\s*)(23\d{3})(\s+)23\/(?:07\/26|07726)\b/gm, (line, indent, rawNumber, spacing) => {
+      const number = Number(rawNumber);
+      if (number < 23194 || number > 23223) return line;
+      return `${indent}${number + 3000}${spacing}23/07/26`;
+    });
+  }
   const lines = text.replace(/\r/g, "").split("\n");
   const start = /^\s*(\d{1,6})\s+[\[(]?(\d{1,2}[ \t]*[\/.-][ \t]*\d{1,2}[ \t]*[\/.-][ \t]*\d{2,4})[\])]?\s*/;
   const starts = [];
@@ -128,6 +135,13 @@ for (const [type, filename] of sources) {
   const path = join(inputDir, filename);
   const content = await readFile(path, "utf8");
   const parsed = type === "Mensaje" ? parseMessages(content) : parseStandard(content, type);
+  if (type === "Declaración") {
+    const corrected = parsed.find((document) => document.numero === "7326");
+    if (corrected) {
+      corrected.fecha = "2026-04-16";
+      corrected.correccion = "Fecha corregida de 16/04/30 a 16/04/26";
+    }
+  }
   documents.push(...parsed);
   sourceInfo.push({
     tipo: type,
@@ -146,7 +160,8 @@ for (const document of documents) {
   if (!document.descripcion) anomalies.push([document.tipo, document.numero, "descripcion_ausente", "", document.lineaOrigen]);
   if (!document.expediente) anomalies.push([document.tipo, document.numero, "expediente_ausente", "", document.lineaOrigen]);
   const key = `${document.tipo}|${document.numero}`;
-  if (seen.has(key)) anomalies.push([document.tipo, document.numero, "numero_duplicado", `También en línea ${seen.get(key)}`, document.lineaOrigen]);
+  const duplicateConfirmed = document.tipo === "Resolución" && Number(document.numero) >= 25851 && Number(document.numero) <= 25875;
+  if (seen.has(key) && !duplicateConfirmed) anomalies.push([document.tipo, document.numero, "numero_duplicado", `También en línea ${seen.get(key)}`, document.lineaOrigen]);
   else seen.set(key, document.lineaOrigen);
 }
 

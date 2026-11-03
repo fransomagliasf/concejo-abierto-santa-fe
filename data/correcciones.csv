@@ -1,0 +1,5 @@
+"tipo","registro","campo","valor_original","valor_corregido","motivo"
+"Declaración","7326","fecha","16/04/30","16/04/26","Corrección confirmada por revisión manual"
+"Resolución","25851-25875","duplicados","Marcados como inconsistencia","Duplicados confirmados","Los dos bloques existen en el archivo fuente"
+"Resolución","26194-26223","número","Prefijo 23 en registros alternados","Prefijo 26","Error de tipeo confirmado dentro de la secuencia 26193-26224"
+"Resolución","26214-26223","fecha","23/07726","23/07/26","Normalización del separador faltante en el mismo bloque corregido"

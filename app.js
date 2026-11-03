@@ -50,7 +50,10 @@ function render() {
         <span class="number">${escapeHtml(document.numero)}</span>
         <span class="meta"><span class="badge">${escapeHtml(document.tipo)}</span><span>${escapeHtml(formatDate(document.fecha))}</span></span>
       </td>
-      <td><div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div></td>
+      <td>
+        <div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div>
+        ${document.expediente ? "" : '<span class="missing-data">N° de expediente ausente</span>'}
+      </td>
       <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a></td>
     </tr>`).join("");
   elements.previous.disabled = state.page === 1;

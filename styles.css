@@ -80,6 +80,7 @@ td { padding: 20px 18px; border-top: 1px solid var(--line); vertical-align: top;
 .meta { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 7px; color: var(--muted); font-size: 12px; }
 .badge { border-radius: 999px; padding: 3px 8px; color: var(--green-dark); background: var(--mint); font-weight: 750; }
 .description { max-width: 760px; line-height: 1.55; }
+.missing-data { display: inline-block; margin-top: 9px; border-radius: 3px; padding: 4px 7px; color: #8a491d; background: #fff0dc; font-size: 12px; font-weight: 750; }
 .document-link { color: var(--green); font-weight: 750; text-underline-offset: 4px; }
 .status-card { display: flex; flex-direction: column; gap: 6px; margin-top: 28px; padding: 44px 24px; border: 1px dashed #b9c5c1; border-radius: 6px; color: var(--muted); text-align: center; }
 .status-card.error { color: #8b2d2d; border-color: #d8afaf; background: #fff8f8; }
