@@ -18,6 +18,7 @@ const normalize = (value) => String(value || "").normalize("NFD").replace(/[\u03
 const formatDate = (date) => date ? new Intl.DateTimeFormat("es-AR", { timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`)) : "Fecha sin validar";
 const formatLongDate = (date) => new Intl.DateTimeFormat("es-AR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));
 const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
+const typeClass = (type) => `type-${normalize(type).replaceAll(" ", "-")}`;
 const byDocumentNumber = (a, b) => String(b.numero).localeCompare(String(a.numero), "es", { numeric: true }) || collator.compare(a.tipo, b.tipo);
 
 function applyFilters() {
@@ -51,10 +52,9 @@ function render() {
   elements.pagination.hidden = state.filtered.length <= PAGE_SIZE;
   elements.body.innerHTML = page.map((document) => `
     <tr>
-      <td>
-        <span class="number">${escapeHtml(document.numero)}</span>
-        <span class="meta"><span class="badge">${escapeHtml(document.tipo)}</span><span>${escapeHtml(formatDate(document.fecha))}</span></span>
-      </td>
+      <td><span class="type-label ${typeClass(document.tipo)}">${escapeHtml(document.tipo)}</span></td>
+      <td><span class="number">${escapeHtml(document.numero)}</span></td>
+      <td><time class="document-date" datetime="${document.fecha || ""}">${escapeHtml(formatDate(document.fecha))}</time></td>
       <td>
         <div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div>
         ${document.expediente === MISSING_EXPEDIENTE ? `<span class="missing-data">${MISSING_EXPEDIENTE}</span>` : ""}
@@ -93,7 +93,7 @@ function renderSessions() {
     return `<article class="session-card">
       <div class="session-card-heading">
         <div><time datetime="${session.date}">${escapeHtml(formatLongDate(session.date))}</time><span>${session.documents.length.toLocaleString("es-AR")} ${session.documents.length === 1 ? "documento" : "documentos"}</span></div>
-        <div class="session-types">${types.map(([type, count]) => `<span>${escapeHtml(type)} <strong>${count}</strong></span>`).join("")}</div>
+        <div class="session-types">${types.map(([type, count]) => `<span class="${typeClass(type)}">${escapeHtml(type)} <strong>${count}</strong></span>`).join("")}</div>
       </div>
       ${expanded ? "" : `<ul class="session-preview">${preview}</ul>`}
       <button class="session-toggle btn btn-link" type="button" data-session="${session.date}" aria-expanded="${expanded}">${expanded ? "Ocultar detalle" : `Ver los ${session.documents.length.toLocaleString("es-AR")} documentos`}</button>
