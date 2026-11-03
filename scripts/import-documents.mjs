@@ -52,8 +52,16 @@ function extractDescription(block, header, type) {
 }
 
 function extractExpediente(block) {
-  const matches = [...block.matchAll(/(?:Expte\.?|Epte\.?|Exptes?\.?)\s*(?:N[º°ª]\s*)?([^\n]{1,150})/gi)];
-  return clean(matches.map((match) => match[1]).join("; ")) || null;
+  const labels = [...block.matchAll(/(?:Expedientes?|Exptes?|Eptes?|Exp|Ex)(?=\.|\s|\d|$)\.?\s*(?:N[º°ªo]\s*)?([^\n]{1,150})/gi)]
+    .map((match) => clean(match[1]))
+    .filter(Boolean);
+  if (labels.length) return [...new Set(labels)].join("; ");
+
+  // En registros modernos el identificador suele aparecer solo, sin la palabra "Expte".
+  // También se conservan expedientes históricos como 1178-D-84 cuando están sin rótulo.
+  const codes = [...block.matchAll(/\b(?:[A-Z]{2}-\d{3,5}-\d{8}-\d|\d{2,8}-[A-Z]{1,4}-\d{2,4})\b/gi)]
+    .map((match) => match[0]);
+  return codes.length ? [...new Set(codes)].join("; ") : null;
 }
 
 function parseStandard(text, type) {
