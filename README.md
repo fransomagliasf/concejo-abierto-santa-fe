@@ -4,6 +4,8 @@ Buscador estático de transparencia legislativa para ordenanzas, decretos, resol
 
 La vista **Sesiones** agrupa ordenanzas, decretos, resoluciones, declaraciones y comunicaciones por su fecha registrada, permite seleccionar un año y desplegar todo lo tratado en cada fecha. Los mensajes no forman parte de esa agrupación porque su fecha corresponde al ingreso del proyecto.
 
+La interfaz usa Bootstrap 5 como base para componentes y estilos, con una capa visual propia en `styles.css`. Las visualizaciones estadísticas que se incorporen al proyecto usarán Chart.js.
+
 ## Uso local
 
 ```bash

@@ -97,7 +97,7 @@ function renderSessions() {
         <div class="session-types">${types.map(([type, count]) => `<span>${escapeHtml(type)} <strong>${count}</strong></span>`).join("")}</div>
       </div>
       ${expanded ? "" : `<ul class="session-preview">${preview}</ul>`}
-      <button class="session-toggle" type="button" data-session="${session.date}" aria-expanded="${expanded}">${expanded ? "Ocultar detalle" : `Ver los ${session.documents.length.toLocaleString("es-AR")} documentos`}</button>
+      <button class="session-toggle btn btn-link" type="button" data-session="${session.date}" aria-expanded="${expanded}">${expanded ? "Ocultar detalle" : `Ver los ${session.documents.length.toLocaleString("es-AR")} documentos`}</button>
       ${detail}
     </article>`;
   }).join("");
