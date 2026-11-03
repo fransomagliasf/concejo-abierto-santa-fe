@@ -23,45 +23,63 @@
         <p class="hero-copy">Consultá ordenanzas, decretos, resoluciones, declaraciones, comunicaciones y mensajes del Concejo Municipal.</p>
       </section>
 
-      <section class="search-panel" aria-labelledby="search-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Archivo legislativo</p>
-            <h2 id="search-title">Buscar documentos</h2>
-          </div>
-          <button id="clear" class="text-button" type="button">Limpiar filtros</button>
+      <section class="search-panel" aria-label="Consulta del archivo legislativo">
+        <div class="view-tabs" role="tablist" aria-label="Visualización del archivo">
+          <button id="documents-tab" class="view-tab active" type="button" role="tab" aria-selected="true" aria-controls="documents-controls">Documentos</button>
+          <button id="sessions-tab" class="view-tab" type="button" role="tab" aria-selected="false" aria-controls="sessions-controls">Sesiones</button>
         </div>
 
-        <form id="filters" class="filters" role="search">
-          <label class="field field-wide">
-            <span>Palabra clave</span>
-            <span class="input-wrap search-input">
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" /></svg>
-              <input id="keyword" type="search" placeholder="Ej.: transporte, presupuesto, espacio público" autocomplete="off" />
-            </span>
-          </label>
+        <div id="documents-controls" role="tabpanel" aria-labelledby="documents-tab">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Archivo legislativo</p>
+              <h2 id="search-title">Buscar documentos</h2>
+            </div>
+            <button id="clear" class="text-button" type="button">Limpiar filtros</button>
+          </div>
 
-          <label class="field">
-            <span>Tipo de documento</span>
-            <select id="type">
-              <option value="">Todos los tipos</option>
-            </select>
-          </label>
+          <form id="filters" class="filters" role="search">
+            <label class="field field-wide">
+              <span>Palabra clave</span>
+              <span class="input-wrap search-input">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" /></svg>
+                <input id="keyword" type="search" placeholder="Ej.: transporte, presupuesto, espacio público" autocomplete="off" />
+              </span>
+            </label>
 
-          <label class="field">
-            <span>Número exacto</span>
-            <input id="number" type="text" inputmode="numeric" placeholder="Ej.: 13157" />
-          </label>
+            <label class="field">
+              <span>Tipo de documento</span>
+              <select id="type">
+                <option value="">Todos los tipos</option>
+              </select>
+            </label>
 
-          <fieldset class="date-range">
-            <legend>Fecha</legend>
-            <label><span>Desde</span><input id="from" type="date" /></label>
-            <label><span>Hasta</span><input id="to" type="date" /></label>
-          </fieldset>
-        </form>
+            <label class="field">
+              <span>Número exacto</span>
+              <input id="number" type="text" inputmode="numeric" placeholder="Ej.: 13157" />
+            </label>
+
+            <fieldset class="date-range">
+              <legend>Fecha</legend>
+              <label><span>Desde</span><input id="from" type="date" /></label>
+              <label><span>Hasta</span><input id="to" type="date" /></label>
+            </fieldset>
+          </form>
+        </div>
+
+        <div id="sessions-controls" role="tabpanel" aria-labelledby="sessions-tab" hidden>
+          <div class="panel-heading session-heading">
+            <div>
+              <p class="eyebrow">Actividad legislativa</p>
+              <h2>Documentos por sesión</h2>
+              <p class="session-explanation">Las sesiones se agrupan por la fecha registrada en ordenanzas, decretos, resoluciones, declaraciones y comunicaciones. Los mensajes se excluyen porque consignan fecha de ingreso.</p>
+            </div>
+            <label class="field year-field"><span>Año</span><select id="session-year"></select></label>
+          </div>
+        </div>
       </section>
 
-      <section class="results" aria-labelledby="results-title">
+      <section id="documents-results" class="results" aria-labelledby="results-title">
         <div class="results-heading">
           <div>
             <p class="eyebrow">Resultados</p>
@@ -89,6 +107,17 @@
           <span id="page-label"></span>
           <button id="next" type="button">Siguiente →</button>
         </nav>
+      </section>
+
+      <section id="sessions-results" class="results sessions-results" aria-labelledby="sessions-title" hidden>
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow">Sesiones</p>
+            <h2 id="sessions-title"><span id="session-count">0 sesiones</span></h2>
+          </div>
+          <p class="active-summary">Seleccioná una sesión para ver todo lo aprobado</p>
+        </div>
+        <div id="session-list" class="session-list"></div>
       </section>
     </main>
 

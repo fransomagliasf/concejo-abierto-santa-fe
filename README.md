@@ -2,6 +2,8 @@
 
 Buscador estático de transparencia legislativa para ordenanzas, decretos, resoluciones, declaraciones, comunicaciones y mensajes del Concejo Municipal de Santa Fe.
 
+La vista **Sesiones** agrupa ordenanzas, decretos, resoluciones, declaraciones y comunicaciones por su fecha registrada, permite seleccionar un año y desplegar todo lo tratado en cada fecha. Los mensajes no forman parte de esa agrupación porque su fecha corresponde al ingreso del proyecto.
+
 ## Uso local
 
 ```bash
