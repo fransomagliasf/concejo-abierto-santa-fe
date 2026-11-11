@@ -119,8 +119,10 @@ th:last-child { width: 120px; }
 .pagination label { color: var(--muted); font-weight: 700; }
 .pagination input { width: 76px; min-height: 40px; text-align: center; }
 .reading-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.reading-list-add, .reading-list-remove { display: block; margin-top: 8px; border: 0; padding: 0; color: var(--green); background: transparent; font-size: 12px; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
-.reading-list-add:disabled { color: var(--muted); text-decoration: none; cursor: default; }
+.reading-list-add, .reading-list-remove { display: block; margin-top: 8px; color: var(--green); font-size: 12px; font-weight: 750; }
+.reading-list-add { border: 1px solid #9fc3b9; border-radius: 4px; padding: 5px 7px; background: #edf7f3; }
+.reading-list-add:disabled { border-color: var(--line); color: var(--muted); background: #f3f5f4; cursor: default; }
+.reading-list-remove { border: 0; padding: 0; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
 .reading-list-table th:nth-child(5) { width: 170px; }
 .reading-list-table td:nth-child(5) { color: var(--muted); overflow-wrap: anywhere; }
 

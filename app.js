@@ -78,7 +78,7 @@ function render() {
         <div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div>
         ${document.expediente === MISSING_EXPEDIENTE ? `<span class="missing-data">${MISSING_EXPEDIENTE}</span>` : ""}
       </td>
-      <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a><button class="reading-list-add" type="button" data-add-reading="${escapeHtml(document.id)}" ${state.readingList.has(document.id) ? "disabled" : ""}>${state.readingList.has(document.id) ? "En mi lista" : "＋ Mi lista"}</button></td>
+      <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a><button class="reading-list-add" type="button" data-add-reading="${escapeHtml(document.id)}" ${state.readingList.has(document.id) ? "disabled" : ""}>${state.readingList.has(document.id) ? "Agregado a mi lista" : "＋ Agregar a mi lista"}</button></td>
     </tr>`).join("");
   elements.previous.disabled = state.page === 1;
   elements.next.disabled = state.page === totalPages;
@@ -90,7 +90,6 @@ function render() {
 function renderReadingList() {
   const documents = [...state.readingList].map((id) => state.documents.find((document) => document.id === id)).filter(Boolean);
   const countLabel = `${documents.length.toLocaleString("es-AR")} ${documents.length === 1 ? "documento" : "documentos"}`;
-  elements.readingListTab.hidden = documents.length === 0;
   elements.readingListTabCount.textContent = documents.length.toLocaleString("es-AR");
   elements.readingListCount.textContent = countLabel;
   elements.readingListEmpty.hidden = documents.length > 0;
@@ -186,10 +185,9 @@ elements.readingListBody.addEventListener("click", (event) => {
     state.readingList.delete(button.dataset.removeReading);
     renderReadingList();
     render();
-    if (state.readingList.size === 0) selectView("documents");
   }
 });
-elements.clearReadingList.addEventListener("click", () => { state.readingList.clear(); renderReadingList(); render(); selectView("documents"); });
+elements.clearReadingList.addEventListener("click", () => { state.readingList.clear(); renderReadingList(); render(); });
 elements.documentsTab.addEventListener("click", () => selectView("documents"));
 elements.sessionsTab.addEventListener("click", () => selectView("sessions"));
 elements.readingListTab.addEventListener("click", () => selectView("reading-list"));
