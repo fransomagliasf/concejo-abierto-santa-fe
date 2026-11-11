@@ -65,11 +65,12 @@ h2 { font-size: clamp(28px, 4vw, 38px); }
 .filters { display: grid; grid-template-columns: minmax(380px, 480px) 155px 230px 135px 135px 62px; gap: 10px; align-items: end; min-width: 1147px; margin: 0; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field-wide { grid-column: span 1; }
+.number-field { position: relative; z-index: 2; }
 .field > span:first-child { color: #34433f; font-size: 12px; font-weight: 700; }
 .field-label { display: flex; align-items: center; gap: 5px; }
-.info-icon { position: relative; display: inline-grid; place-items: center; width: 16px; height: 16px; border: 1px solid #79918a; border-radius: 50%; color: var(--green); font-size: 10px; font-weight: 800; line-height: 1; cursor: help; }
-.info-icon::after { position: absolute; z-index: 5; bottom: calc(100% + 8px); left: 50%; width: max-content; max-width: 260px; padding: 8px 10px; border-radius: 4px; color: var(--white); background: var(--ink); box-shadow: 0 5px 18px rgba(0,0,0,.18); content: attr(data-tooltip); font-size: 11px; font-weight: 400; line-height: 1.4; opacity: 0; pointer-events: none; transform: translate(-50%, 4px); transition: opacity .15s, transform .15s; }
-.info-icon:hover::after, .info-icon:focus::after { opacity: 1; transform: translate(-50%, 0); }
+.info-icon { position: relative; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; color: var(--white); background: var(--green); font-size: 11px; font-weight: 800; line-height: 1; cursor: help; }
+.info-icon::after { position: absolute; z-index: 5; top: 50%; left: calc(100% + 8px); width: 245px; padding: 8px 10px; border-radius: 4px; color: var(--white); background: var(--ink); box-shadow: 0 5px 18px rgba(0,0,0,.18); content: attr(data-tooltip); font-size: 11px; font-weight: 400; line-height: 1.4; opacity: 0; pointer-events: none; transform: translate(4px, -50%); transition: opacity .15s, transform .15s; }
+.info-icon:hover::after, .info-icon:focus::after { opacity: 1; transform: translate(0, -50%); }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
 input, select { width: 100%; min-height: 42px; border: 1px solid #bfcac6; border-radius: 4px; padding: 0 10px; color: var(--ink); background: var(--white); }
 input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 3px solid rgba(25,95,80,.22); outline-offset: 2px; border-color: var(--green); }
