@@ -72,6 +72,7 @@ input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 3px 
 .search-input svg { position: absolute; z-index: 2; top: 13px; left: 12px; width: 16px; fill: none; stroke: #66736f; stroke-width: 2; }
 .search-input input { padding-left: 36px; }
 .clear-button { width: 62px; min-height: 42px; padding-inline: 5px; white-space: nowrap; font-size: 11px; }
+#number-help { color: var(--muted); font-size: 11px; }
 #from, #to { border-color: #a9cec3; background-color: #e5f3ee; }
 .session-heading { align-items: flex-end; }
 .session-explanation { max-width: 780px; margin: 14px 0 0; color: var(--muted); line-height: 1.55; }
@@ -110,6 +111,18 @@ th:last-child { width: 120px; }
 .pagination button { border: 1px solid var(--line); border-radius: 4px; padding: 10px 14px; color: var(--green); background: var(--white); font-weight: 700; }
 .pagination button:disabled { opacity: .4; cursor: default; }
 .pagination span { color: var(--muted); font-size: 14px; }
+.pagination label { color: var(--muted); font-weight: 700; }
+.pagination input { width: 76px; min-height: 40px; text-align: center; }
+.reading-list { margin-top: 22px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 6px; background: #f5f8f6; }
+.reading-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.reading-list h3 { margin: 0; color: var(--green-dark); font-size: 17px; }
+.reading-list p { margin: 5px 0 0; color: var(--muted); }
+.reading-list ul { display: grid; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
+.reading-list li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--white); line-height: 1.4; }
+.reading-list li strong { color: var(--green); }
+.reading-list-add, .reading-list-remove { display: block; margin-top: 8px; border: 0; padding: 0; color: var(--green); background: transparent; font-size: 12px; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
+.reading-list-add:disabled { color: var(--muted); text-decoration: none; cursor: default; }
+.reading-list-remove { flex: 0 0 auto; margin: 0; }
 
 .sessions-results { padding-top: 62px; }
 .session-list { display: grid; gap: 18px; margin-top: 28px; }

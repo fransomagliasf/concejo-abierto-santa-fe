@@ -1,6 +1,6 @@
 const PAGE_SIZE = 10;
 const MISSING_EXPEDIENTE = "Expediente ausente";
-const state = { documents: [], filtered: [], sessions: [], page: 1, expandedSession: null };
+const state = { documents: [], filtered: [], sessions: [], page: 1, expandedSession: null, readingList: new Set() };
 const collator = new Intl.Collator("es", { sensitivity: "base", usage: "search" });
 const $ = (selector) => document.querySelector(selector);
 const elements = {
@@ -8,7 +8,8 @@ const elements = {
   from: $("#from"), to: $("#to"), clear: $("#clear"), body: $("#table-body"),
   count: $("#result-count"), loading: $("#loading"),
   error: $("#error"), empty: $("#empty"), table: $("#table-wrap"), pagination: $("#pagination"),
-  previous: $("#previous"), next: $("#next"), pageLabel: $("#page-label"), notice: $("#notice"),
+  previous: $("#previous"), next: $("#next"), pageLabel: $("#page-label"), notice: $("#notice"), pageNumber: $("#page-number"),
+  readingListItems: $("#reading-list-items"), readingListEmpty: $("#reading-list-empty"), clearReadingList: $("#clear-reading-list"),
   documentsTab: $("#documents-tab"), sessionsTab: $("#sessions-tab"), documentsControls: $("#documents-controls"),
   sessionsControls: $("#sessions-controls"), documentsResults: $("#documents-results"), sessionsResults: $("#sessions-results"),
   sessionYear: $("#session-year"), sessionCount: $("#session-count"), sessionList: $("#session-list"),
@@ -21,15 +22,33 @@ const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (character
 const typeClass = (type) => `type-${normalize(type).replaceAll(" ", "-")}`;
 const byDocumentNumber = (a, b) => String(b.numero).localeCompare(String(a.numero), "es", { numeric: true }) || collator.compare(a.tipo, b.tipo);
 
+function parseNumberQuery(value) {
+  const input = value.trim();
+  if (!input) return null;
+  const terms = input.split(";").map((part) => part.trim());
+  if (terms.some((part) => !part)) return null;
+  const parsed = terms.map((term) => {
+    const range = term.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (range) return { from: Math.min(Number(range[1]), Number(range[2])), to: Math.max(Number(range[1]), Number(range[2])) };
+    if (/^\d+$/.test(term)) return { from: Number(term), to: Number(term) };
+    return null;
+  });
+  return parsed.every(Boolean) ? parsed : null;
+}
+
 function applyFilters() {
   const keyword = normalize(elements.keyword.value.trim());
   const type = elements.type.value;
-  const number = normalize(elements.number.value.trim()).replace(/^0+(?=\d)/, "");
+  const numberQuery = parseNumberQuery(elements.number.value);
   const from = elements.from.value;
   const to = elements.to.value;
   state.filtered = state.documents.filter((document) => {
     if (type && document.tipo !== type) return false;
-    if (number && normalize(document.numero).replace(/^0+(?=\d)/, "") !== number) return false;
+    if (elements.number.value.trim()) {
+      if (!numberQuery) return false;
+      const documentNumber = String(document.numero).replace(/\D/g, "");
+      if (!documentNumber || !numberQuery.some(({ from, to }) => Number(documentNumber) >= from && Number(documentNumber) <= to)) return false;
+    }
     if (from && (!document.fecha || document.fecha < from)) return false;
     if (to && (!document.fecha || document.fecha > to)) return false;
     if (keyword && !normalize(`${document.descripcion} ${document.expediente || ""} ${document.tipo} ${document.numero}`).includes(keyword)) return false;
@@ -57,11 +76,20 @@ function render() {
         <div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div>
         ${document.expediente === MISSING_EXPEDIENTE ? `<span class="missing-data">${MISSING_EXPEDIENTE}</span>` : ""}
       </td>
-      <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a></td>
+      <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a><button class="reading-list-add" type="button" data-add-reading="${escapeHtml(document.id)}" ${state.readingList.has(document.id) ? "disabled" : ""}>${state.readingList.has(document.id) ? "En mi lista" : "＋ Mi lista"}</button></td>
     </tr>`).join("");
   elements.previous.disabled = state.page === 1;
   elements.next.disabled = state.page === totalPages;
   elements.pageLabel.textContent = `Página ${state.page} de ${totalPages}`;
+  elements.pageNumber.value = state.page;
+  elements.pageNumber.max = totalPages;
+}
+
+function renderReadingList() {
+  const documents = [...state.readingList].map((id) => state.documents.find((document) => document.id === id)).filter(Boolean);
+  elements.readingListEmpty.hidden = documents.length > 0;
+  elements.clearReadingList.hidden = documents.length === 0;
+  elements.readingListItems.innerHTML = documents.map((document) => `<li><span><strong>${escapeHtml(document.tipo)} ${escapeHtml(document.numero)}</strong> — ${escapeHtml(document.descripcion || "Sin descripción")}</span><button type="button" class="reading-list-remove" data-remove-reading="${escapeHtml(document.id)}" aria-label="Quitar ${escapeHtml(document.tipo)} ${escapeHtml(document.numero)}">Quitar</button></li>`).join("");
 }
 
 function buildSessions() {
@@ -120,6 +148,26 @@ elements.form.addEventListener("submit", (event) => event.preventDefault());
 elements.clear.addEventListener("click", () => { elements.form.reset(); applyFilters(); elements.keyword.focus(); });
 elements.previous.addEventListener("click", () => { state.page -= 1; render(); $("#results-title").scrollIntoView({ behavior: "smooth" }); });
 elements.next.addEventListener("click", () => { state.page += 1; render(); $("#results-title").scrollIntoView({ behavior: "smooth" }); });
+elements.pageNumber.addEventListener("change", () => {
+  const totalPages = Math.max(1, Math.ceil(state.filtered.length / PAGE_SIZE));
+  state.page = Math.min(totalPages, Math.max(1, Number(elements.pageNumber.value) || 1));
+  render();
+});
+elements.body.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-add-reading]");
+  if (!button) return;
+  state.readingList.add(button.dataset.addReading);
+  renderReadingList();
+  render();
+});
+elements.readingListItems.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-reading]");
+  if (!button) return;
+  state.readingList.delete(button.dataset.removeReading);
+  renderReadingList();
+  render();
+});
+elements.clearReadingList.addEventListener("click", () => { state.readingList.clear(); renderReadingList(); render(); });
 elements.documentsTab.addEventListener("click", () => selectView("documents"));
 elements.sessionsTab.addEventListener("click", () => selectView("sessions"));
 elements.sessionYear.addEventListener("change", () => { state.expandedSession = null; renderSessions(); });
@@ -145,6 +193,7 @@ try {
   const payload = await response.json();
   state.documents = payload.documentos;
   state.filtered = [...payload.documentos].sort(byDocumentNumber);
+  renderReadingList();
   buildSessions();
   if (elements.sessionsTab.getAttribute("aria-selected") === "true") renderSessions();
   [...new Set(payload.documentos.map((document) => document.tipo))].sort((a, b) => collator.compare(a, b)).forEach((type) => elements.type.add(new Option(type, type)));

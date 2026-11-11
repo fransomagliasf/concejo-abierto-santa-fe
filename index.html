@@ -49,8 +49,9 @@
             </label>
 
             <label class="field">
-              <span>Número exacto</span>
-              <input id="number" class="form-control" type="text" placeholder="Ej.: 13157 o 34/25" />
+              <span>Número, lista o rango</span>
+              <input id="number" class="form-control" type="text" placeholder="Ej.: 11100-11005; 12340; 12343" aria-describedby="number-help" />
+              <small id="number-help">Separá números con punto y coma o indicá un rango con guion.</small>
             </label>
 
             <label class="field"><span>Desde</span><input id="from" class="form-control" type="date" /></label>
@@ -76,6 +77,15 @@
           <h2 id="results-title">Resultados <span class="results-separator">—</span> <span id="result-count">Cargando</span></h2>
         </div>
 
+        <aside id="reading-list" class="reading-list" aria-labelledby="reading-list-title">
+          <div class="reading-list-heading">
+            <div><h3 id="reading-list-title">Mi lista de interés</h3><p>Documentos agrupados temporalmente mientras navegás.</p></div>
+            <button id="clear-reading-list" class="text-button" type="button" hidden>Vaciar lista</button>
+          </div>
+          <p id="reading-list-empty">Todavía no agregaste documentos.</p>
+          <ul id="reading-list-items"></ul>
+        </aside>
+
         <div id="loading" class="status-card">Preparando el archivo legislativo…</div>
         <div id="error" class="status-card error" hidden>No pudimos cargar los datos. Volvé a intentar en unos minutos.</div>
         <div id="empty" class="status-card" hidden>
@@ -92,6 +102,8 @@
 
         <nav id="pagination" class="pagination" aria-label="Paginación de resultados" hidden>
           <button id="previous" class="btn btn-outline-success" type="button">← Anterior</button>
+          <label for="page-number">Página</label>
+          <input id="page-number" type="number" min="1" value="1" inputmode="numeric" />
           <span id="page-label"></span>
           <button id="next" class="btn btn-outline-success" type="button">Siguiente →</button>
         </nav>
