@@ -29,6 +29,7 @@
         <div class="view-tabs" role="tablist" aria-label="Visualización del archivo">
           <button id="documents-tab" class="view-tab btn active" type="button" role="tab" aria-selected="true" aria-controls="documents-controls">Documentos</button>
           <button id="sessions-tab" class="view-tab btn" type="button" role="tab" aria-selected="false" aria-controls="sessions-controls">Sesiones</button>
+          <button id="reading-list-tab" class="view-tab btn" type="button" role="tab" aria-selected="false" aria-controls="reading-list-controls" hidden>Mi lista de interés (<span id="reading-list-tab-count">0</span>)</button>
         </div>
 
         <div id="documents-controls" role="tabpanel" aria-labelledby="documents-tab">
@@ -70,21 +71,23 @@
             <label class="field year-field"><span>Año</span><select id="session-year" class="form-select"></select></label>
           </div>
         </div>
+
+        <div id="reading-list-controls" role="tabpanel" aria-labelledby="reading-list-tab" hidden>
+          <div class="panel-heading reading-list-heading">
+            <div>
+              <p class="eyebrow">Selección temporal</p>
+              <h2>Mi lista de interés</h2>
+              <p class="session-explanation">Reuní documentos para consultarlos en una tabla completa mientras permanezcas en esta página.</p>
+            </div>
+            <button id="clear-reading-list" class="text-button" type="button">Vaciar lista</button>
+          </div>
+        </div>
       </section>
 
       <section id="documents-results" class="results" aria-labelledby="results-title">
         <div class="results-heading">
           <h2 id="results-title">Resultados <span class="results-separator">—</span> <span id="result-count">Cargando</span></h2>
         </div>
-
-        <aside id="reading-list" class="reading-list" aria-labelledby="reading-list-title">
-          <div class="reading-list-heading">
-            <div><h3 id="reading-list-title">Mi lista de interés</h3><p>Documentos agrupados temporalmente mientras navegás.</p></div>
-            <button id="clear-reading-list" class="text-button" type="button" hidden>Vaciar lista</button>
-          </div>
-          <p id="reading-list-empty">Todavía no agregaste documentos.</p>
-          <ul id="reading-list-items"></ul>
-        </aside>
 
         <div id="loading" class="status-card">Preparando el archivo legislativo…</div>
         <div id="error" class="status-card error" hidden>No pudimos cargar los datos. Volvé a intentar en unos minutos.</div>
@@ -107,6 +110,22 @@
           <span id="page-label"></span>
           <button id="next" class="btn btn-outline-success" type="button">Siguiente →</button>
         </nav>
+      </section>
+
+      <section id="reading-list-results" class="results" aria-labelledby="reading-list-title" hidden>
+        <div class="results-heading">
+          <h2 id="reading-list-title">Mi lista de interés <span class="results-separator">—</span> <span id="reading-list-count">0 documentos</span></h2>
+        </div>
+        <div id="reading-list-empty" class="status-card">
+          <strong>La lista está vacía.</strong>
+          <span>Agregá documentos desde la pestaña Documentos.</span>
+        </div>
+        <div id="reading-list-table" class="table-wrap" hidden>
+          <table class="table mb-0 reading-list-table">
+            <thead><tr><th>Tipo</th><th>Número</th><th>Fecha</th><th>Descripción</th><th>Expediente</th><th>Documento</th></tr></thead>
+            <tbody id="reading-list-body"></tbody>
+          </table>
+        </div>
       </section>
 
       <section id="sessions-results" class="results sessions-results" aria-labelledby="sessions-title" hidden>

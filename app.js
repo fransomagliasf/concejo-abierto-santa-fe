@@ -9,9 +9,11 @@ const elements = {
   count: $("#result-count"), loading: $("#loading"),
   error: $("#error"), empty: $("#empty"), table: $("#table-wrap"), pagination: $("#pagination"),
   previous: $("#previous"), next: $("#next"), pageLabel: $("#page-label"), notice: $("#notice"), pageNumber: $("#page-number"),
-  readingListItems: $("#reading-list-items"), readingListEmpty: $("#reading-list-empty"), clearReadingList: $("#clear-reading-list"),
-  documentsTab: $("#documents-tab"), sessionsTab: $("#sessions-tab"), documentsControls: $("#documents-controls"),
-  sessionsControls: $("#sessions-controls"), documentsResults: $("#documents-results"), sessionsResults: $("#sessions-results"),
+  readingListBody: $("#reading-list-body"), readingListEmpty: $("#reading-list-empty"), readingListTable: $("#reading-list-table"),
+  readingListCount: $("#reading-list-count"), readingListTabCount: $("#reading-list-tab-count"), clearReadingList: $("#clear-reading-list"),
+  documentsTab: $("#documents-tab"), sessionsTab: $("#sessions-tab"), readingListTab: $("#reading-list-tab"), documentsControls: $("#documents-controls"),
+  sessionsControls: $("#sessions-controls"), readingListControls: $("#reading-list-controls"), documentsResults: $("#documents-results"),
+  sessionsResults: $("#sessions-results"), readingListResults: $("#reading-list-results"),
   sessionYear: $("#session-year"), sessionCount: $("#session-count"), sessionList: $("#session-list"),
 };
 
@@ -87,9 +89,20 @@ function render() {
 
 function renderReadingList() {
   const documents = [...state.readingList].map((id) => state.documents.find((document) => document.id === id)).filter(Boolean);
+  const countLabel = `${documents.length.toLocaleString("es-AR")} ${documents.length === 1 ? "documento" : "documentos"}`;
+  elements.readingListTab.hidden = documents.length === 0;
+  elements.readingListTabCount.textContent = documents.length.toLocaleString("es-AR");
+  elements.readingListCount.textContent = countLabel;
   elements.readingListEmpty.hidden = documents.length > 0;
-  elements.clearReadingList.hidden = documents.length === 0;
-  elements.readingListItems.innerHTML = documents.map((document) => `<li><span><strong>${escapeHtml(document.tipo)} ${escapeHtml(document.numero)}</strong> — ${escapeHtml(document.descripcion || "Sin descripción")}</span><button type="button" class="reading-list-remove" data-remove-reading="${escapeHtml(document.id)}" aria-label="Quitar ${escapeHtml(document.tipo)} ${escapeHtml(document.numero)}">Quitar</button></li>`).join("");
+  elements.readingListTable.hidden = documents.length === 0;
+  elements.readingListBody.innerHTML = documents.map((document) => `<tr>
+    <td><span class="type-label ${typeClass(document.tipo)}">${escapeHtml(document.tipo)}</span></td>
+    <td><span class="number">${escapeHtml(document.numero)}</span></td>
+    <td><time class="document-date" datetime="${document.fecha || ""}">${escapeHtml(formatDate(document.fecha))}</time></td>
+    <td><div class="description">${escapeHtml(document.descripcion || "Sin descripción")}</div></td>
+    <td>${escapeHtml(document.expediente || "Sin expediente")}</td>
+    <td><a class="document-link" href="#" data-document="${escapeHtml(document.id)}">Ver documento</a><button type="button" class="reading-list-remove" data-remove-reading="${escapeHtml(document.id)}" aria-label="Quitar ${escapeHtml(document.tipo)} ${escapeHtml(document.numero)}">Quitar de mi lista</button></td>
+  </tr>`).join("");
 }
 
 function buildSessions() {
@@ -129,16 +142,23 @@ function renderSessions() {
 }
 
 function selectView(view) {
+  const documentsActive = view === "documents";
   const sessionsActive = view === "sessions";
-  elements.documentsTab.classList.toggle("active", !sessionsActive);
+  const readingListActive = view === "reading-list";
+  elements.documentsTab.classList.toggle("active", documentsActive);
   elements.sessionsTab.classList.toggle("active", sessionsActive);
-  elements.documentsTab.setAttribute("aria-selected", String(!sessionsActive));
+  elements.readingListTab.classList.toggle("active", readingListActive);
+  elements.documentsTab.setAttribute("aria-selected", String(documentsActive));
   elements.sessionsTab.setAttribute("aria-selected", String(sessionsActive));
-  elements.documentsControls.hidden = sessionsActive;
-  elements.documentsResults.hidden = sessionsActive;
+  elements.readingListTab.setAttribute("aria-selected", String(readingListActive));
+  elements.documentsControls.hidden = !documentsActive;
+  elements.documentsResults.hidden = !documentsActive;
   elements.sessionsControls.hidden = !sessionsActive;
   elements.sessionsResults.hidden = !sessionsActive;
+  elements.readingListControls.hidden = !readingListActive;
+  elements.readingListResults.hidden = !readingListActive;
   if (sessionsActive) renderSessions();
+  if (readingListActive) renderReadingList();
 }
 
 let debounce;
@@ -160,16 +180,19 @@ elements.body.addEventListener("click", (event) => {
   renderReadingList();
   render();
 });
-elements.readingListItems.addEventListener("click", (event) => {
+elements.readingListBody.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-reading]");
-  if (!button) return;
-  state.readingList.delete(button.dataset.removeReading);
-  renderReadingList();
-  render();
+  if (button) {
+    state.readingList.delete(button.dataset.removeReading);
+    renderReadingList();
+    render();
+    if (state.readingList.size === 0) selectView("documents");
+  }
 });
-elements.clearReadingList.addEventListener("click", () => { state.readingList.clear(); renderReadingList(); render(); });
+elements.clearReadingList.addEventListener("click", () => { state.readingList.clear(); renderReadingList(); render(); selectView("documents"); });
 elements.documentsTab.addEventListener("click", () => selectView("documents"));
 elements.sessionsTab.addEventListener("click", () => selectView("sessions"));
+elements.readingListTab.addEventListener("click", () => selectView("reading-list"));
 elements.sessionYear.addEventListener("change", () => { state.expandedSession = null; renderSessions(); });
 elements.sessionList.addEventListener("click", (event) => {
   const button = event.target.closest(".session-toggle");
@@ -179,6 +202,14 @@ elements.sessionList.addEventListener("click", (event) => {
   if (state.expandedSession) document.querySelector(`[data-session="${state.expandedSession}"]`)?.closest(".session-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 elements.body.addEventListener("click", (event) => {
+  const link = event.target.closest(".document-link");
+  if (!link) return;
+  event.preventDefault();
+  elements.notice.hidden = false;
+  clearTimeout(elements.notice.timer);
+  elements.notice.timer = setTimeout(() => { elements.notice.hidden = true; }, 3200);
+});
+elements.readingListBody.addEventListener("click", (event) => {
   const link = event.target.closest(".document-link");
   if (!link) return;
   event.preventDefault();

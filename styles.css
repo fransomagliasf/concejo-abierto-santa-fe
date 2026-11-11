@@ -118,16 +118,11 @@ th:last-child { width: 120px; }
 .pagination span { color: var(--muted); font-size: 14px; }
 .pagination label { color: var(--muted); font-weight: 700; }
 .pagination input { width: 76px; min-height: 40px; text-align: center; }
-.reading-list { margin-top: 22px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 6px; background: #f5f8f6; }
 .reading-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.reading-list h3 { margin: 0; color: var(--green-dark); font-size: 17px; }
-.reading-list p { margin: 5px 0 0; color: var(--muted); }
-.reading-list ul { display: grid; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
-.reading-list li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--white); line-height: 1.4; }
-.reading-list li strong { color: var(--green); }
 .reading-list-add, .reading-list-remove { display: block; margin-top: 8px; border: 0; padding: 0; color: var(--green); background: transparent; font-size: 12px; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; }
 .reading-list-add:disabled { color: var(--muted); text-decoration: none; cursor: default; }
-.reading-list-remove { flex: 0 0 auto; margin: 0; }
+.reading-list-table th:nth-child(5) { width: 170px; }
+.reading-list-table td:nth-child(5) { color: var(--muted); overflow-wrap: anywhere; }
 
 .sessions-results { padding-top: 62px; }
 .session-list { display: grid; gap: 18px; margin-top: 28px; }
